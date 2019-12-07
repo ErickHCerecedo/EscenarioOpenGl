@@ -1,0 +1,21 @@
+# depslib dependency file v1.0
+1575761287 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\main.cpp
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<stdlib.h>
+	<stdio.h>
+	<iostream>
+	"math.h"
+
+1442889364 c:\glut\include\gl\glut.h
+	<windows.h>
+	<GL/gl.h>
+	<GL/glu.h>
+
+1575761207 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\src\gamecamara.cpp
+	"GameCamara.h"
+
+1575761184 c:\users\erick\documents\codeblocks_projects\proyectofinal\include\gamecamara.h
+	<GLUT/glut.h>
+	<GL/glut.h>
+
