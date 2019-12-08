@@ -42,6 +42,7 @@
 			<Add library="glu32" />
 			<Add library="winmm" />
 			<Add library="gdi32" />
+			<Add library="glut" />
 			<Add directory="C:/GLUT/lib" />
 		</Linker>
 		<Unit filename="include/GameCamara.h" />

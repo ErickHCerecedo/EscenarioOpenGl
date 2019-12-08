@@ -2,11 +2,14 @@
 #define GAMECAMARA_H
 
 #ifdef __APPLE__
-#define GL_SILENCE_DEPRECATION // Apple
+#define GL_SILENCE_DEPRECATION
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
+
+#include <stdio.h>
+#include "math.h"
 
 
 class GameCamara
@@ -14,45 +17,64 @@ class GameCamara
     public:
         GameCamara();
         virtual ~GameCamara();
+
+        // Inicio del escenario
+        void init(int argc, char **argv);
+        void initLight();
+        void resize(int width, int height);
+        // Camara
         void renderGameCamera();
+        // Control de Mouse
         void toggleMouseWarp();
-
-        // callback function
-        void changeSize(int w, int h);
         void mousePosition(int x, int y);
-
-        // Getter and Setter
+        // Control de Teclado
+        void key(unsigned char key, int x, int y);
+        void keyup(unsigned char key, int x, int y);
+        // Control de estados
         void goForwardStart();
-        void goForwardStop();
-        void goBackwardStart();
-        void goBackwardStop();
-        void goLeftStart();
-        void goLeftStop();
-        void goRigthStart();
-        void goRigthStop();
-
+      	void goForwardStop();
+      	void goBackwardStart();
+      	void goBackwardStop();
+      	void goLeftStart();
+      	void goLeftStop();
+      	void goRightStart();
+      	void goRightStop();
+        // Variables de direccion del mouse
         float mouseDirectionX;
-        float mouseDirectionY;
-
+      	float mouseDirectionY;
+        float ANGLE;
+        
     protected:
 
     private:
-      GLfloat EYE_X, EYE_Y, EYE_Z;
-      GLfloat CENTER_X, CENTER_Y, CENTER_Z;
-      GLfloat UP_X, UP_Y, UP_Z;
 
-      // Variable de pantalla
-      int	ANCHO, ALTO;
-    	int PREVIUSTIME;
-
-    	//
-    	float moveforward_backward;
-    	float moveSiteward;
-
-    	//Status Variablen
-      bool FORWARD, BACKWARD, LEFT, RIGTH;
-
-    	bool mouseWarp;
+      // Tamaño de la pantalla
+      GLint ANCHO, ALTO;
+      // Variables del observador
+      float EYE_X;
+      float EYE_Y;
+      float EYE_Z;
+      float CENTER_X;
+      float CENTER_Y;
+      float CENTER_Z;
+      float UP_X;
+      float UP_Y;
+      float UP_Z;
+      // Variables de perspectiva
+      GLfloat FOVY;
+      GLfloat ZNEAR;
+      GLfloat ZFAR;
+      // Variables de estado
+      bool FORWARD;
+      bool BACKWARD;
+      bool LEFT;
+      bool RIGHT;
+      // Variable mouse
+      bool mouseWarp;
+      // Variable tiempo
+      int PREVIOUSTIME;
+      float moveforward_backward;
+		  float moveSiteward;
 
 };
 

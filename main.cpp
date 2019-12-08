@@ -6,88 +6,173 @@
 //  Copyright � 2019 Erick de Jesus Hernandez Cerecedo. All rights reserved.
 //
 
+
 #ifdef __APPLE__
-#define GL_SILENCE_DEPRECATION // Apple
+#define GL_SILENCE_DEPRECATION
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
+#include <GL/freeglut.h>
 #endif
 
-// Librerias
+#include <GL/glext.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <iostream>
 #include "math.h"
+#include "FreeImage.h"
 
-// Variables dimensiones de la pantalla
-GLint ANCHO=1280;
-GLint ALTO=720;
+#include "GameCamara.h"
 
-// Variables para establecer los valores de glutPerspective
-GLfloat FOVY=60.0;
-GLfloat ZNEAR=0.01;
-GLfloat ZFAR=200;
+GameCamara *gameCamara;
 
-// Variable que definen la posicion del observador
-float EYE_X=0.0;
-float EYE_Y=0.0;
-float EYE_Z=0.0;
-float CENTER_X=1;
-float CENTER_Y=1;
-float CENTER_Z=1;
-float UP_X=0;
-float UP_Y=1;
-float UP_Z=0;
+//se define la cantidad de texturas que se manejaran
+#define NTextures 2
+GLuint	texture[NTextures];
+//variables para manejo de texturas
+char *texturefiles[] = {
+  "C:/Users/erick/Documents/CodeBlocks_Projects/ProyectoFinal/imagen3.bmp",
+	"C:/Users/erick/Documents/CodeBlocks_Projects/ProyectoFinal/imagen1.bmp",
+	"C:/Users/erick/Documents/CodeBlocks_Projects/ProyectoFinal/imagen2.bmp",
+};
 
-//Variables para matrices de rotacion y traslaci�n
-float Theta=0;
-//float Radio=1.0;
-float PI = 3.14159265359;
-float Direction[3] = {1.0,0.0,0.0};
+float points[5][3]={{0,0,10},{10,0,10},{10,0,0},{0,0,0},{5.0,10.0,5.0}};
 
-GLfloat anguloSol = 0.0f;
+
+bool readImage()
+{
+  	//image format
+	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+	//pointer to the image, once loaded
+	FIBITMAP *dib(0), *dib_copy(0);
+	//pointer to the image data
+	BYTE* bits(0);
+	//image width and height
+	unsigned int width(0), height(0);
+	int i=0;
+	while(i < NTextures){
+        //check the file signature and deduce its format
+        fif = FreeImage_GetFileType(texturefiles[i], 0);
+        //if still unknown, try to guess the file format from the file extension
+        if(fif == FIF_UNKNOWN)
+            fif = FreeImage_GetFIFFromFilename(texturefiles[i]);
+        //if still unkown, return failure
+        if(fif == FIF_UNKNOWN){
+                printf("exit 0\n");
+            return false;
+        }
+        //check that the plugin has reading capabilities and load the file
+        if(FreeImage_FIFSupportsReading(fif)){
+                printf("reading image...\n");
+            dib = FreeImage_Load(fif, texturefiles[i], BMP_DEFAULT);
+        }
+        //if the image failed to load, return failure
+        if(!dib){
+                printf("exit 1\n");
+            return false;
+        }
+        //conversion to 24 bit deep color
+        dib_copy = FreeImage_ConvertTo32Bits(dib);
+        FreeImage_Unload(dib);
+        dib = dib_copy;
+
+        //TEXTURE GENERATION
+
+        //retrieve the image data
+        bits = FreeImage_GetBits(dib);
+        //get the image width and height
+        width = FreeImage_GetWidth(dib);
+        height = FreeImage_GetHeight(dib);
+        //if this somehow one of these failed (they shouldn't), return failure
+        if((bits == 0) || (width == 0) || (height == 0))
+            return false;
+
+        //generate an OpenGL texture ID for this texture
+        glGenTextures(1, &texture[i]);
+        //bind to the new texture ID
+        glBindTexture(GL_TEXTURE_2D, texture[i]);
+        //store the texture data for OpenGL use
+        // ** AGREGADO ** (filtros para la textura y condicional de mipmap) //
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0,
+                     GL_BGRA, GL_UNSIGNED_BYTE, bits);
+
+        //Free FreeImage's copy of the data
+        FreeImage_Unload(dib);
+        i++;
+	}
+
+	//return success
+	return true;
+}
+
+void ImprimePiramide(int escala)
+{
+    glPushMatrix();
+    glScalef(escala,escala,escala);
+    int i;
+
+    //activa la textura
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    glColor3ub(255, 255, 255);
+
+       //se dibuja la punta
+       for(i=0;i<3;i++){
+          glBegin(GL_TRIANGLES);
+             glTexCoord2f(0.0f,0.5f);
+             glVertex3f(points[4][0],points[4][1],points[4][2]);
+             glTexCoord2f(0.0f,1.0f);
+             glVertex3f(points[i][0],points[i][1],points[i][2]);
+             glTexCoord2f(1.0f,1.0f);
+             glVertex3f(points[i+1][0],points[i+1][1],points[i+1][2]);
+          glEnd();
+          }
+
+           glBegin(GL_TRIANGLES);
+                 glTexCoord2f(0.0f,0.5f);
+                 glVertex3f(points[4][0],points[4][1],points[4][2]);
+                 glTexCoord2f(0.0f,1.0f);
+                 glVertex3f(points[3][0],points[3][1],points[3][2]);
+                 glTexCoord2f(1.0f,1.0f);
+                 glVertex3f(points[0][0],points[0][1],points[0][2]);
+           glEnd();
+
+
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f,1.0f);
+        glVertex3f(points[0][0],points[0][1],points[0][2]);
+        glTexCoord2f(1.0f,1.0f);
+        glVertex3f(points[1][0],points[1][1],points[1][2]);
+        glTexCoord2f(1.0f,0.0f);
+        glVertex3f(points[2][0],points[2][1],points[2][2]);
+        glTexCoord2f(0.0f,0.0f);
+        glVertex3f(points[3][0],points[3][1],points[3][2]);
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+ }
+
 /* GLUT callback Handlers */
 
-
-float RadToDeg(float r)
+void resize(int width, int height)
 {
-      return ((180.0*r)/PI);
+  gameCamara->resize(width, height);
 }
 
-float DegToRad(float g)
+void Sol()
 {
-      return ((g*PI)/180.0);
-}
-
-static void resize(int width, int height)
-{
-    const float ar = (float) width / (float) height;
-    ANCHO = width;
-    ALTO = height;
-
-    glViewport(0, 0, ANCHO, ALTO);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(FOVY, (GLfloat)ANCHO/ALTO, ZNEAR, ZFAR);
-    //glFrustum(-ar, ar, -1.0, 1.0, 2.0, 100.0);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(EYE_X,EYE_Y,EYE_Z,CENTER_X,CENTER_Y,CENTER_Z,UP_X,UP_Y,UP_Z);
-
-}
-
-void LookAt()
-{
-    Direction[0] = cos(DegToRad(Theta));
-    Direction[2] = sin(DegToRad(Theta));
-    CENTER_X = EYE_X + Direction[0];
-    CENTER_Z = EYE_Z + Direction[2];
+  glPushMatrix();
+    glColor3f(0.953, 0.624, 0.094);
+    glutWireSphere(15.0f,20,20);
+  glPopMatrix();
 }
 
 void drawAxis()
 {
-    //glShadeModel(GL_SMOOTH);
     //X axis in red
     glColor3ub(30, 136, 229); // X Green
     glBegin(GL_LINES);
@@ -114,135 +199,103 @@ void drawAxis()
     glEnd();
     glRasterPos3f(0.0f,0.0f,60.0f);
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'Z');
-
 }
 
-static void display(void)
+void display(void)
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClear(GL_COLOR_BUFFER_BIT);
-    //glColor3d(1,0,0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    drawAxis();
+  gameCamara->renderGameCamera();
 
-    glPushMatrix();
-    glRotatef(90, 1.0f, 0.0f, 0.0f);
-    glRotatef(anguloSol, 0.0f, 0.0f, 1.0f);
-    glColor3f(0.953, 0.624, 0.094);
-    glutWireSphere(5.0f,20,20);
-      glColor3f(0.682, 0.714, 0.69);
-    glPopMatrix();
-
-    glutSwapBuffers();
+  glColor3f(1.0f, 0.0f, 0.0f);
+  Sol();
+  drawAxis();
+  ImprimePiramide(2);
+  glutSwapBuffers();
 }
 
 
-static void key(unsigned char key, int x, int y)
+void idle()
 {
-    switch (key)
-    {
-      case 'W': // Adelante
-      case 'w':
-        EYE_X += Direction[0];
-        EYE_Y += Direction[1];
-        EYE_Z += Direction[2];
-        CENTER_X = EYE_X + Direction[0];
-        CENTER_Y = EYE_Y + Direction[1];
-        CENTER_Z = EYE_Z + Direction[2];
+  display();
+}
 
-        break;
-      case 'S': // Atras
-      case 's':
-        EYE_X -= Direction[0];
-        EYE_Y -= Direction[1];
-        EYE_Z -= Direction[2];
-        CENTER_X = EYE_X + Direction[0];
-        CENTER_Y = EYE_Y + Direction[1];
-        CENTER_Z = EYE_Z + Direction[2];
-        break;
-      case 'A': // Izquierda
-      case 'a':
-        Theta -= 1.0f;
-        Theta = (Theta < 0.0) ? 359.0 : Theta;
-        LookAt();
-        break;
-      case 'D': // Derecha
-      case 'd':
-        Theta += 1.0f;
-        Theta = (Theta > 359.0) ? 0.0 : Theta;
-        LookAt();
-        break;
-      case 27 :
-        exit(0);
-        break;
-    }
+void key(unsigned char key, int x, int y)
+{
+  gameCamara->key(key,x,y);
+}
 
-    glLoadIdentity();
-    gluLookAt(EYE_X,EYE_Y,EYE_Z,CENTER_X,CENTER_Y,CENTER_Z,UP_X,UP_Y,UP_Z);
+void keyup(unsigned char key, int x, int y)
+{
+  gameCamara->keyup(key,x,y);
+}
+
+void mousePosition(int x, int y)
+{
+	gameCamara->mousePosition(x,y);
+}
+
+void processTimedEvent(int x) {
+  // perform light movement and trigger redisplay
     glutPostRedisplay();
-}
-
-// Constantes de Luz
-const GLfloat light_ambient[]  = { 0.0f, 0.0f, 0.0f, 1.0f };
-const GLfloat light_diffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
-const GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-const GLfloat light_position[] = { 2.0f, 5.0f, 5.0f, 0.0f };
-
-const GLfloat mat_ambient[]    = { 0.7f, 0.7f, 0.7f, 1.0f };
-const GLfloat mat_diffuse[]    = { 0.8f, 0.8f, 0.8f, 1.0f };
-const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
-const GLfloat high_shininess[] = { 100.0f };
-
-void init()
-{
-
-  ANCHO = 1280;
-  ALTO = 720;
-
-  glClearColor(0.196, 0.196, 0.196,1);
-  glEnable(GL_CULL_FACE);
-  glCullFace(GL_BACK);
-
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
-
-  glEnable(GL_LIGHT0);
-  glEnable(GL_NORMALIZE);
-  glEnable(GL_COLOR_MATERIAL);
-  glEnable(GL_LIGHTING);
-
-  glLightfv(GL_LIGHT0, GL_AMBIENT,  light_ambient);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_diffuse);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-  glMaterialfv(GL_FRONT, GL_AMBIENT,   mat_ambient);
-  glMaterialfv(GL_FRONT, GL_DIFFUSE,   mat_diffuse);
-  glMaterialfv(GL_FRONT, GL_SPECULAR,  mat_specular);
-  glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
-}
-
-static void idle(void)
-{
-    glutPostRedisplay();
+    gameCamara->ANGLE += 0.3f;
+  // start event again
+  glutTimerFunc(10 , processTimedEvent, 0);
 }
 
 /* Program entry point */
-
 int main(int argc, char *argv[])
 {
-    glutInit(&argc, argv);
-    glutInitWindowSize(ANCHO,ALTO);
-    glutInitWindowPosition(10,10);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_SINGLE);
-    glutCreateWindow("Proyecto Final");
-    init();
-    glutReshapeFunc(resize);
-    glutDisplayFunc(display);
-    glutKeyboardFunc(key);
-    glutIdleFunc(idle);
 
-    glutMainLoop();
+  gameCamara = new GameCamara();
+  FreeImage_Initialise();
 
-    return EXIT_SUCCESS;
+  gameCamara->init(argc,argv);
+
+  if(!readImage()) return 0;
+
+  glutDisplayFunc(display);
+  glutReshapeFunc(resize);
+  glutIdleFunc(idle);
+
+  glutIgnoreKeyRepeat(1);
+
+  glutKeyboardFunc(key);
+  glutKeyboardUpFunc(keyup);
+  glutPassiveMotionFunc(mousePosition);
+  glutTimerFunc(20, processTimedEvent, 0);
+  glutMainLoop();
+  return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
