@@ -49,28 +49,28 @@ void GameCamara::init(int argc, char **argv)
   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
   glShadeModel(GL_FLAT);
   glEnable(GL_DEPTH_TEST);
-  //initLight();
+  initLight();
 }
 
 void GameCamara::initLight()
 {
   // Constantes de Luz
-  const GLfloat light_ambient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
+  const GLfloat light_ambient[]  = { 0.8f, 0.8f, 0.8f, 1.0f };
   const GLfloat light_diffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
   const GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-  const GLfloat light_position[] = { 2.0f, 5.0f, 5.0f, 0.0f };
+  const GLfloat light_position[] = { 500.0f, 500.0f, 500.0f, 0.0f };
 
   const GLfloat mat_ambient[]    = { 0.7f, 0.7f, 0.7f, 1.0f };
   const GLfloat mat_diffuse[]    = { 0.8f, 0.8f, 0.8f, 1.0f };
   const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
   const GLfloat high_shininess[] = { 128.0f };
 
-  glClearColor(0.349, 0.62, 0.929,1);
-  glEnable(GL_CULL_FACE);
-  glCullFace(GL_BACK);
+  //glClearColor(0.349, 0.62, 0.929,1);
+  //glEnable(GL_CULL_FACE);
+  //glCullFace(GL_BACK);
 
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
+  //glEnable(GL_DEPTH_TEST);
+  //glDepthFunc(GL_LESS);
 
   glEnable(GL_LIGHT0);
   glEnable(GL_NORMALIZE);
@@ -93,10 +93,12 @@ void GameCamara::initLight()
 
 void GameCamara::resize(int width, int height)
 {
-  glViewport(0, 0, width, height);
+  ANCHO=width;
+  ALTO=height;
+  glViewport(0, 0, ANCHO, ALTO);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(FOVY, (GLfloat)width/(GLfloat)height, ZNEAR, ZFAR);
+  gluPerspective(FOVY, (GLfloat)ANCHO/(GLfloat)ALTO, ZNEAR, ZFAR);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();

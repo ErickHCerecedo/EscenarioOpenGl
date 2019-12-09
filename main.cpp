@@ -80,7 +80,7 @@ void display(void)
 
   objeto1.dibujarObjeto(30.0);
 
-  objeto2.dibujarObjeto(5.0);
+  objeto2.dibujarObjeto(10.0);
 
   objeto3.dibujarObjeto(5.0);
 

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1575883217 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\main.cpp
+1575889591 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\main.cpp
 	<GLUT/glut.h>
 	<GL/glut.h>
 	<GL/freeglut.h>
@@ -16,7 +16,7 @@
 	<GL/gl.h>
 	<GL/glu.h>
 
-1575883098 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\src\gamecamara.cpp
+1575889522 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\src\gamecamara.cpp
 	"GameCamara.h"
 
 1575806153 c:\users\erick\documents\codeblocks_projects\proyectofinal\include\gamecamara.h
@@ -56,7 +56,7 @@
 	<wchar.h>
 	<inttypes.h>
 
-1575882959 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\src\objetos.cpp
+1575888754 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\src\objetos.cpp
 	"Objetos.h"
 
 1575883134 c:\users\erick\documents\codeblocks_projects\proyectofinal\include\objetos.h
