@@ -27,11 +27,11 @@
 
 GameCamara *gameCamara;
 Textura textura;
-Objetos objeto1(&textura, 1);
-Objetos objeto2(&textura, 2);
-Objetos objeto3(&textura, 3);
-Objetos objeto4(&textura, 4);
-Objetos objeto5(&textura, 5);
+Objetos objeto1(&textura, 1); // Cono
+Objetos objeto2(&textura, 2); // Esfera
+Objetos objeto3(&textura, 3); // Cubo
+Objetos objeto4(&textura, 4); // Piramide
+Objetos objeto5(&textura, 5); // Skybox
 
 /* GLUT callback Handlers */
 void resize(int width, int height)
@@ -74,19 +74,13 @@ void display(void)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   gameCamara->renderGameCamera();
   glColor3f(1.0f, 0.0f, 0.0f);
-
   drawAxis();
-
-
-  objeto1.dibujarObjeto(30.0);
-
-  objeto2.dibujarObjeto(10.0);
-
-  objeto3.dibujarObjeto(5.0);
-
-  objeto4.dibujarObjeto(5.0);
-
-  objeto5.dibujarObjeto(500.0);
+                    // TAMAÑO - ESCALA - 3 VALORES TRASLADA - 4 VALORES ROTACION
+  objeto1.dibujarObjeto(30.0,    1,         1, 1, 1,            30.0, 1,0,0);
+  objeto2.dibujarObjeto(10.0,    30.0,      1, 1, 1,            30.0, 1,0,0);
+  objeto3.dibujarObjeto(5.0,     30.0,      1, 1, 1,            30.0, 1,0,0);
+  objeto4.dibujarObjeto(5.0,     30.0,      1, 1, 1,            30.0, 1,0,0);
+  objeto5.dibujarObjeto(500.0,   30.0,      1, 1, 1,            30.0, 1,0,0);
 
   glutSwapBuffers();
 }
@@ -112,10 +106,8 @@ void mousePosition(int x, int y)
 }
 
 void processTimedEvent(int x) {
-  // perform light movement and trigger redisplay
     glutPostRedisplay();
     gameCamara->ANGLE += 0.3f;
-  // start event again
   glutTimerFunc(10 , processTimedEvent, 0);
 }
 
@@ -125,15 +117,11 @@ int main(int argc, char *argv[])
   gameCamara = new GameCamara();      // Inicio de escenario
   FreeImage_Initialise();             // Inicio de la libreria de imagenes
   gameCamara->init(argc,argv);
-
   if(!textura.readImage()) return 0;
-
   glutDisplayFunc(display);
   glutReshapeFunc(resize);
   glutIdleFunc(idle);
-
   glutIgnoreKeyRepeat(1);
-
   glutKeyboardFunc(key);
   glutKeyboardUpFunc(keyup);
   glutPassiveMotionFunc(mousePosition);

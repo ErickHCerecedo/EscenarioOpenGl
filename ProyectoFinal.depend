@@ -16,7 +16,7 @@
 	<GL/gl.h>
 	<GL/glu.h>
 
-1575889522 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\src\gamecamara.cpp
+1575889803 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\src\gamecamara.cpp
 	"GameCamara.h"
 
 1575806153 c:\users\erick\documents\codeblocks_projects\proyectofinal\include\gamecamara.h
@@ -56,10 +56,10 @@
 	<wchar.h>
 	<inttypes.h>
 
-1575888754 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\src\objetos.cpp
+1575924934 source:c:\users\erick\documents\codeblocks_projects\proyectofinal\src\objetos.cpp
 	"Objetos.h"
 
-1575883134 c:\users\erick\documents\codeblocks_projects\proyectofinal\include\objetos.h
+1575924325 c:\users\erick\documents\codeblocks_projects\proyectofinal\include\objetos.h
 	<GLUT/glut.h>
 	<GL/glut.h>
 	"../Textura.h"
