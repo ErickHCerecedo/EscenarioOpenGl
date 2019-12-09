@@ -43,11 +43,17 @@
 			<Add library="winmm" />
 			<Add library="gdi32" />
 			<Add library="glut" />
+			<Add library="C:/Users/erick/Documents/CodeBlocks_Projects/ProyectoFinal/FreeImage.lib" />
 			<Add directory="C:/GLUT/lib" />
 		</Linker>
+		<Unit filename="FreeImage.h" />
 		<Unit filename="include/GameCamara.h" />
+		<Unit filename="include/Objetos.h" />
+		<Unit filename="Textura.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/GameCamara.cpp" />
+		<Unit filename="src/Objetos.cpp" />
+		<Unit filename="Textura.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

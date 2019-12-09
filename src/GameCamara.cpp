@@ -6,18 +6,19 @@ GameCamara::GameCamara()
   ANCHO=1280;
   ALTO=720;
   // Inicio de variables del observador
-  EYE_X=100.0;
-  EYE_Y=100.0;
-  EYE_Z=100.0;
-  CENTER_X=0;
-  CENTER_Y=0;
-  CENTER_Z=0;
+  EYE_X=0.0;
+  EYE_Y=0.0;
+  EYE_Z=0.0;
+  CENTER_X=10;
+  CENTER_Y=10;
+  CENTER_Z=10;
   UP_X=0;
   UP_Y=1;
   UP_Z=0;
   // Inicio de la variable de perspectiva
-  FOVY = 60.0;
+  FOVY = 90.0;
   ZNEAR = 0.01;
+  ZFAR=2000.0;
   // Inicio del estado del observador
   FORWARD=false;
   BACKWARD=false;
@@ -45,8 +46,10 @@ void GameCamara::init(int argc, char **argv)
   glutCreateWindow("Planetario");
 
   glClearColor(0.604, 0.788, 0.996, 1);
+  glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+  glShadeModel(GL_FLAT);
   glEnable(GL_DEPTH_TEST);
-  initLight();
+  //initLight();
 }
 
 void GameCamara::initLight()
@@ -66,9 +69,6 @@ void GameCamara::initLight()
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
 
-  glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-  glShadeModel(GL_FLAT);
-
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
 
@@ -87,7 +87,8 @@ void GameCamara::initLight()
   glMaterialfv(GL_FRONT, GL_SPECULAR,  mat_specular);
   glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
 
-
+  glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+  glShadeModel(GL_FLAT);
 }
 
 void GameCamara::resize(int width, int height)
@@ -95,7 +96,7 @@ void GameCamara::resize(int width, int height)
   glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(60.0f, (GLfloat)width/(GLfloat)height, 1.0f, 300.0f);
+  gluPerspective(FOVY, (GLfloat)width/(GLfloat)height, ZNEAR, ZFAR);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -104,12 +105,6 @@ void GameCamara::resize(int width, int height)
 
 void GameCamara::renderGameCamera()
 {
-  glPushMatrix();
-    glTranslatef(20,0.0,0.0);
-    glColor3f(0.953, 0.624, 0.094);
-    glutWireSphere(8.0f,20,20);
-  glPopMatrix();
-
   int CURRENTTIME = glutGet(GLUT_ELAPSED_TIME);
 	int TIMEINTERVAL = CURRENTTIME - PREVIOUSTIME;
 
